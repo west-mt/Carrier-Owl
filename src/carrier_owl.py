@@ -100,11 +100,11 @@ def notify(results: list, slack_id: str, line_token: str) -> None:
 
         text = f'\n score: `{score}`'\
                f'\n hit keywords: `{word}`'\
-               f'\n url: {url}'\
-               f'\n title:    {title} ({title_orig})'\
+               f'\n title: {title} ({title_orig})'\
                f'\n abstract:'\
-               f'\n \t {abstract}'\
-               f'\n\n \t {abstract_orig}'\
+               f'\n # {url}'\
+               f'\n {abstract_orig}'\
+               f'\n\n {abstract}'\
                f'\n {star}'
 
         send2app(text, slack_id, line_token)
