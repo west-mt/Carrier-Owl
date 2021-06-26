@@ -104,7 +104,9 @@ def notify(results: list, slack_id: str, line_token: str) -> None:
                f'\n abstract:'\
                f'\n # {url}'\
                f'\n {abstract_orig}'\
+               f'\n '\
                f'\n\n {abstract}'\
+               f'\n '\
                f'\n {star}'
 
         send2app(text, slack_id, line_token)
