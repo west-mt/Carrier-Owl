@@ -182,7 +182,7 @@ def main():
                   f'submittedDate:' \
                   f'[{day_before_yesterday_str}000000 TO {day_before_yesterday_str}235959]'
     articles = arxiv.query(query=arxiv_query,
-                           max_results=30, #1000,
+                           max_results=1000,
                            sort_by='submittedDate',
                            iterative=False)
     results = search_keyword(articles, keywords, score_threshold)
