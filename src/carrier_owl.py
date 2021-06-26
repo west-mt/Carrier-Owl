@@ -22,7 +22,9 @@ warnings.filterwarnings('ignore')
 class Result:
     url: str
     title: str
+    title_orig: str
     abstract: str
+    abstract_orig: str
     words: list
     score: float = 0.0
 
@@ -53,10 +55,13 @@ def search_keyword(
             title_trans = get_translated_text('ja', 'en', title)
             abstract = abstract.replace('\n', '')
             abstract_trans = get_translated_text('ja', 'en', abstract)
-            abstract_trans = textwrap.wrap(abstract_trans, 40)  # 40行で改行
+            abstract_trans = textwrap.wrap(abstract_trans, 40)  # 40文字で改行
             abstract_trans = '\n'.join(abstract_trans)
+            abstract_orig = textwrap.wrap(abstract, 80)  # 40文字で改行
+            abstract_orig = '\n'.join(abstract_orig)
             result = Result(
                     url=url, title=title_trans, abstract=abstract_trans,
+                    title_orig=title, abstract_orig=abstract_orig,
                     score=score, words=hit_keywords)
             results.append(result)
     return results
@@ -87,16 +92,19 @@ def notify(results: list, slack_id: str, line_token: str) -> None:
     for result in sorted(results, reverse=True, key=lambda x: x.score):
         url = result.url
         title = result.title
+        title_orig = result.title_orig
         abstract = result.abstract
+        abstract_orig = result.abstract_orig
         word = result.words
         score = result.score
 
         text = f'\n score: `{score}`'\
                f'\n hit keywords: `{word}`'\
                f'\n url: {url}'\
-               f'\n title:    {title}'\
+               f'\n title:    {title} ({title_orig})'\
                f'\n abstract:'\
                f'\n \t {abstract}'\
+               f'\n\n \t {abstract_orig}'\
                f'\n {star}'
 
         send2app(text, slack_id, line_token)
@@ -174,7 +182,7 @@ def main():
                   f'submittedDate:' \
                   f'[{day_before_yesterday_str}000000 TO {day_before_yesterday_str}235959]'
     articles = arxiv.query(query=arxiv_query,
-                           max_results=1000,
+                           max_results=30, #1000,
                            sort_by='submittedDate',
                            iterative=False)
     results = search_keyword(articles, keywords, score_threshold)
